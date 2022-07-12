@@ -1,6 +1,8 @@
 from picamera2 import PiCamera2
 from threading import Thread
 import cv2
+import time
+import simplejpeg as sj
 
 class PiVideoStream:
 	def __init__(self, resolution=(800, 640), framerate=32, **kwargs):
@@ -51,3 +53,17 @@ class PiVideoStream:
 	def stop(self):
 		# indicate that the thread should be stopped
 		self.stopped = True
+
+frameCount = 0
+print("[INFO] sampling THREADED frames from `picamera` module...")
+vs = PiVideoStream(resolution=(800,640)).start()
+time.sleep(1.0)
+timePoint = time.time()
+while (time.time-timePoint<10):
+    vs.read()
+    #buffer = sj.encode_jpeg(vs.read(),25,'rgb','444',True)
+    frameCount += 1
+    
+print("{:.2f}".format(frameCount/(time.time()-timePoint)))
+print("{:.2f}".format(time.time()-timePoint))
+vs.stop()
